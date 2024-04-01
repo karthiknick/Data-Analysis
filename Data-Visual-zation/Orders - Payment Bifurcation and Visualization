@@ -1,0 +1,39 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+file_name = 'Last 30 Days Orders.csv'
+
+data = pd.read_csv(f'/Users/healofy/Downloads/{file_name}')
+# print(data)
+# print(data.shape)
+
+data.columns
+
+x = data['Paymentmode'].value_counts()
+print(x)
+
+plt.rcParams['figure.figsize'] = [5,5]
+x.plot(kind='bar', color= 'blue')
+
+plt.title('Univariate Analysis on Payment Mode of Orders Data', fontsize = 10)
+plt.xlabel('Payment_Mode', fontsize= 5)
+plt.ylabel('Values', fontsize= 5)
+plt.show()
+
+online_orders = data[data.Paymentmode.isin(['ONLINE'])]
+y = online_orders['Paymentdone'].value_counts()
+print(y)
+
+plt.title('Univariate Analysis on Payment done for Prepaid Orders Data', fontsize = 10)
+online_orders['Paymentdone'].value_counts().plot(kind='pie', labels=online_orders['Paymentdone'].value_counts().index)
+plt.show()
+
+online_orders = data[data.Paymentmode.isin(['ONLINE'])]
+z = online_orders['Status'].value_counts()
+print(z)
+
+plt.title('Univariate Analysis on Status of Online Orders Data', fontsize = 10)
+online_orders['Status'].value_counts().plot(kind='bar',color= 'lightblue')
+plt.xlabel('Order_Status', fontsize= 5)
+plt.ylabel('#_Of_Orders', fontsize= 5)
+plt.show()
