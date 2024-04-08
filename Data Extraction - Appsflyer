@@ -1,0 +1,106 @@
+import requests
+import pandas as pd 
+import json 
+
+event_name = "AppsFlyer-Conversion-Data"
+event_property = "adset"
+
+start_date = "2023-08-14"
+end_date = "2023-08-18"
+
+url = (f"https://data.mixpanel.com/api/2.0/export?project_id=284XXXX&from_date={start_date}&to_date={end_date}&event=%5B%22{event_name}%22%5D&where=defined%28properties%5B%22adset%22%5D%29")
+
+print(f"{start_date} to {end_date}")
+
+headers = {
+    "accept": "text/plain",
+    "authorization": "Basic VWRpdC5iYjM5ZDQubXAtc2VydmljZS1hY2NvdW50OkxHSjRZeGhib1B6VmZ5aDBVWDlDXXXXXXXXXXXXXXXXX"
+    }
+
+
+response = requests.get(url, headers=headers)
+data = response.text
+
+# print(data)
+
+with open(f"/Users/healofy/Desktop/{event_name}{'-'}{event_property}{'-'}{start_date}","w+", encoding= 'utf-8') as f :
+    f.write(data)
+    f.close()
+
+print(f"{start_date}{' to '}{end_date} AppsFlyer_Data")
+
+
+# convert text to csv file
+with open(f"/Users/healofy/Desktop/{event_name}{'-'}{event_property}{'-'}{start_date}","r", encoding='utf-8') as f:
+    data = f.read()
+
+
+final= []
+
+final  = data.split("\n")
+
+
+final_list = []
+
+print(final[1])
+
+for i in range(0,len(final)-1):
+
+        json_data = json.loads(final[i])
+        # print(json_data)
+        
+        
+
+        try:
+            userid = json_data["properties"]["z_UserId"]
+        except:
+             userid = "NA"
+        
+
+        try:
+            currentApp = json_data["properties"]["z_currentAppVersion"]
+        except:
+             currentApp = "NA"
+
+
+        try:
+            adset_name = json_data["properties"]["adset"]
+        except:
+             adset_name = "NA"
+
+        
+        try:
+            device_model = json_data["properties"]["$model"]
+        except:
+             device_model = "NA"
+
+        try:
+             city = json_data["properties"]["$city"]
+        except:
+             city = "NA"
+
+        try:
+             is_first_launch = json_data["properties"]["is_first_launch"]
+        except:
+             is_first_launch = "NA"
+          
+        try:
+             event_timestamp = json_data["properties"]["time"]
+        except:
+             event_property = "NA"
+
+
+
+        temp_list = [userid, is_first_launch, device_model, currentApp, adset_name, city, event_timestamp]
+
+
+        final_list.append(temp_list)
+
+
+
+data_final = pd.DataFrame(final_list,columns=["userid", "is_first_launch", "device_model", "currentApp", "adset_name", "city","event_timestamp"])
+data_final.to_csv(f"/Users/healofy/Desktop/AppsFlyer_Data/AppsFlyer-Conversion-Data-adset_data{start_date}{ 'to '}{end_date}.csv", index=False)
+
+print(data_final)
+
+print("Save to CSV Done")
